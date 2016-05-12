@@ -234,6 +234,8 @@ const char *aisleriot_game_get_score (AisleriotGame *game);
 
 char **ar_get_game_modules (void);
 
+AisleriotGame *get_app_game (void);
+
 G_END_DECLS
 
 #endif /* !AISLERIOT_GAME_H */

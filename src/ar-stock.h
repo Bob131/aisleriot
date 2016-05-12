@@ -36,6 +36,7 @@ G_BEGIN_DECLS
 #define AR_STOCK_RESET            "aisleriot-game-reset"
 #define AR_STOCK_RESTART_GAME     "aisleriot-game-restart"
 #define AR_STOCK_HINT             "aisleriot-game-hint"
+#define AR_STOCK_SOLVE            "aisleriot-game-solve"
 #define AR_STOCK_UNDO_MOVE        "aisleriot-move-undo"
 #define AR_STOCK_REDO_MOVE        "aisleriot-move-redo"
 #define AR_STOCK_CONTENTS         "aisleriot-help-contents"

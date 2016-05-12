@@ -24,6 +24,8 @@ if test -z "$enable_maintainer_mode"; then
 fi
 AM_MAINTAINER_MODE([enable])
 
+AM_PROG_VALAC([0.28])
+
 # *****************************************************************************
 
 PKG_PROG_PKG_CONFIG([0.15])

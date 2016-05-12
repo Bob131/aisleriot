@@ -2606,3 +2606,8 @@ ar_get_game_modules (void)
 
   return (char **) g_ptr_array_free (array, FALSE);
 }
+
+AisleriotGame *
+get_app_game (void) {
+  return app_game;
+}

@@ -38,6 +38,8 @@ sol_SOURCES = \
 	util.h		\
 	window.c	\
 	window.h	\
+	solver.vala	\
+	solver.h	\
 	$(NULL)
 
 sol_CPPFLAGS = \
@@ -61,6 +63,13 @@ sol_LDADD = \
 	$(AISLERIOT_LIBS) \
 	-lm
 
+sol_VALAFLAGS = \
+	--pkg gio-2.0	\
+	--pkg game	\
+	--vapidir vapi	\
+	-H solver.h	\
+	--gresources aisleriot.gresource.xml
+
 if PLATFORM_WIN32_NATIVE
 sol_LDFLAGS += -mwindows
 endif
@@ -68,6 +77,8 @@ endif
 BUILT_SOURCES = \
 	ar-resources.c \
 	ar-resources.h \
+	solver.c       \
+	solver.h       \
 	$(NULL)
 
 ar-resources.h ar-resources.c: aisleriot.gresource.xml Makefile $(shell $(GLIB_COMPILE_RESOURCES) --generate-dependencies aisleriot.gresource.xml)

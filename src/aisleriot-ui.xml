@@ -43,6 +43,8 @@
     <toolitem action="RedoMove"/>
     <toolitem action="Deal"/>
     <toolitem action="Hint"/>
+    <separator/>
+    <toolitem action="Solve"/>
     <separator name="LeaveFullscreenSep" expand="true"/>
     <toolitem action="LeaveFullscreen"/>
   </toolbar>

@@ -49,6 +49,8 @@
 #include "util.h"
 #include "ar-game-chooser.h"
 
+#include "solver.h"
+
 #include "window.h"
 
 #define AISLERIOT_WINDOW_GET_PRIVATE(window)(G_TYPE_INSTANCE_GET_PRIVATE ((window), AISLERIOT_TYPE_WINDOW, AisleriotWindowPrivate))
@@ -1838,6 +1840,9 @@ aisleriot_window_init (AisleriotWindow *window)
     { "Hint", AR_STOCK_HINT, NULL, NULL,
       N_("Get a hint for your next move"),
       G_CALLBACK (show_hint_cb) },
+    { "Solve", AR_STOCK_SOLVE, NULL, NULL,
+      N_("Attempt to solve the game"),
+      G_CALLBACK (solve_cb) },
     { "Contents", AR_STOCK_CONTENTS, NULL, NULL,
       N_("View help for Aisleriot"),
       G_CALLBACK (help_general_cb) },
