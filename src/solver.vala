@@ -5,20 +5,40 @@ class Solver : Object {
 
     ulong window_state_signal;
 
-    List<unowned Slot>? foundation;
-    List<unowned Slot>? tableau;
+    SList<unowned Slot>? foundation;
+    SList<unowned Slot>? tableau;
 
-    void make_play() {
-        unowned List<unowned Slot> in_play = tableau;
-        unowned List<unowned Slot> founder = foundation;
+    Queue<int?> moves = new Queue<int?>();
+
+    bool backtrack() {
+        while (true) {
+            message("backtrack");
+            game.undo_move();
+            var index = moves.pop_head();
+
+            if (moves.is_empty())
+                return false;
+
+            if (index == null)
+                continue;
+
+            if (make_play(index + 1))
+                return true;
+        }
+    }
+
+    bool make_play(int index = 0) {
+        unowned SList<unowned Slot> in_play = tableau;
+        unowned SList<unowned Slot> founder = foundation;
         if ((in_play == null || in_play.data == null)
                 || (founder == null || founder.data == null))
-            return;
+            return false;
 
-        var success = false;
-        while (!success) {
+        (unowned Slot)[] available_choices = {};
+
+        while (true) {
             if (game.drop_valid(in_play.data, founder.data))
-                success = game.activate(in_play.data);
+                available_choices += in_play.data;
             founder = founder.next;
             if (founder == null) {
                 founder = foundation;
@@ -27,8 +47,27 @@ class Solver : Object {
                     break;
             }
         }
-        if (!success && game.can_deal)
+
+        message("index: %d, avail: %d", index, available_choices.length);
+
+        if (available_choices.length > index) {
+            message("move");
+            game.activate(available_choices[index]);
+            moves.push_head(index);
+            return true;
+        }
+
+        // are we missing solutions here?
+        if (game.can_deal && index == 0) {
+            message("deal");
             game.deal_cards();
+            moves.push_head(null);
+            return true;
+        }
+
+        message("fail");
+
+        return false;
     }
 
     void populate_lists() {
@@ -69,12 +108,15 @@ class Solver : Object {
 
         Idle.add(() => {
             make_play();
-            if (game.state == GameState.OVER && find_win) {
-                game.new_game();
-                populate_lists();
-            }
-            // if find_win is true, keep going until GameState.WON
-            return game.state < GameState.OVER + (int) find_win;
+            if (game.state == GameState.OVER)
+                if (!moves.is_empty())
+                    return backtrack();
+                else if (find_win) {
+                    game.new_game();
+                    populate_lists();
+                } else
+                    return false;
+            return true;
         });
     }
 }
