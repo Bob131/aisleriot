@@ -21,6 +21,7 @@
 #include <gtk/gtk.h>
 
 #include "game.h"
+#include "board-noclutter.h"
 
 G_BEGIN_DECLS
 
@@ -65,6 +66,8 @@ void aisleriot_window_new_game (AisleriotWindow * window);
 void aisleriot_window_change_game (AisleriotWindow * window);
 void aisleriot_window_show_statistics_dialog (AisleriotWindow * window);
 void aisleriot_window_show_about_dialog (AisleriotWindow * window);
+
+AisleriotBoard* aisleriot_window_get_board (AisleriotWindow * window);
 
 
 G_END_DECLS

@@ -1,4 +1,3 @@
-[CCode (cheader_filename = "game.h")]
 namespace Aisleriot {
     [CCode (cname = "ArSlotType", cprefix = "AR_SLOT_", has_type_id = false)]
     public enum SlotType {
@@ -62,6 +61,8 @@ namespace Aisleriot {
         public void deal_cards();
         public void new_game();
 
+        public signal void game_new();
+
         [CCode (cname = "aisleriot_game_drop_valid")]
         private bool _drop_valid(int start_slot, int end_slot, Card[] cards);
         [CCode (cname = "aisleriot_game_drop_valid_wrapper")]
@@ -88,9 +89,6 @@ namespace Aisleriot {
             return ret;
         }
 
-        public signal void game_cleared();
+        public Game.get_default();
     }
-
-    [CCode (cname = "get_app_game")]
-    public unowned Game get_app_game();
 }

@@ -2608,6 +2608,7 @@ ar_get_game_modules (void)
 }
 
 AisleriotGame *
-get_app_game (void) {
-  return app_game;
+aisleriot_game_new_get_default (void) {
+  g_assert (app_game);
+  return g_object_ref(app_game);
 }

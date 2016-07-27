@@ -1840,9 +1840,6 @@ aisleriot_window_init (AisleriotWindow *window)
     { "Hint", AR_STOCK_HINT, NULL, NULL,
       N_("Get a hint for your next move"),
       G_CALLBACK (show_hint_cb) },
-    { "Solve", AR_STOCK_SOLVE, NULL, NULL,
-      N_("Attempt to solve the game"),
-      G_CALLBACK (solve_cb) },
     { "Contents", AR_STOCK_CONTENTS, NULL, NULL,
       N_("View help for Aisleriot"),
       G_CALLBACK (help_general_cb) },
@@ -1900,10 +1897,22 @@ aisleriot_window_init (AisleriotWindow *window)
       N_("Pick up and drop cards by clicking"),
       G_CALLBACK (clickmove_toggle_cb),
       FALSE /* not active by default */ },
-   { "Sound", NULL, N_("_Sound"), NULL,
+    { "Sound", NULL, N_("_Sound"), NULL,
       N_("Whether or not to play event sounds"),
       G_CALLBACK (sound_toggle_cb),
       FALSE /* not active by default */ },
+    { "DebugSolver", NULL, "Visual solver debug assist", NULL,
+      N_("Whether or not to display solver reasoning"),
+      G_CALLBACK (debug_solver_cb),
+      FALSE /* not active by default */ },
+    { "SolveUntilWin", NULL, "Solve until win", NULL,
+      N_("Whether or not to continue solving until a winning game is found"),
+      G_CALLBACK (solve_until_win_cb),
+      FALSE /* not active by default */ },
+    { "Solve", AR_STOCK_SOLVE, NULL, NULL,
+      N_("Attempt to solve the game"),
+      G_CALLBACK (solve_cb),
+      FALSE },
   };
 
   static const char names[][16] = {
@@ -2401,4 +2410,12 @@ aisleriot_window_get_game_module (AisleriotWindow *window)
   AisleriotWindowPrivate *priv = window->priv;
 
   return aisleriot_game_get_game_module (priv->game);
+}
+
+AisleriotBoard *
+aisleriot_window_get_board (AisleriotWindow *window)
+{
+  AisleriotBoard* ret = window->priv->board;
+  g_assert (ret);
+  return g_object_ref(ret);
 }

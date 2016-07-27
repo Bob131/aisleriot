@@ -558,6 +558,21 @@ set_selection (AisleriotBoard *board,
   }
 }
 
+void
+aisleriot_board_set_selection_slot (AisleriotBoard *board,
+                                    ArSlot *slot)
+{
+  set_selection (board, slot, slot ? 0 : -1, TRUE);
+}
+
+ArSlot *
+aisleriot_board_get_selection_slot (AisleriotBoard *board)
+{
+  ArSlot* ret = board->priv->selection_slot;
+  g_assert (ret);
+  return g_object_ref(ret);
+}
+
 /* Slot functions */
 
 static void

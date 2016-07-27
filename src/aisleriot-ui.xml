@@ -26,6 +26,9 @@
       <separator/>
       <menuitem action="ClickToMove"/>
       <menuitem action="Sound"/>
+      <separator/>
+      <menuitem action="DebugSolver"/>
+      <menuitem action="SolveUntilWin"/>
     </menu>
     <menu action="OptionsMenu"/>
     <menu action="HelpMenu">

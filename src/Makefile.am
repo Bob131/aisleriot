@@ -64,11 +64,11 @@ sol_LDADD = \
 	-lm
 
 sol_VALAFLAGS = \
-	--pkg gio-2.0	\
-	--pkg game	\
-	--vapidir vapi	\
-	-H solver.h	\
-	--gresources aisleriot.gresource.xml
+	-H solver.h	 \
+	--vapidir vapi	 \
+	--pkg aisleriot  \
+	--fatal-warnings \
+	--enable-checking
 
 if PLATFORM_WIN32_NATIVE
 sol_LDFLAGS += -mwindows

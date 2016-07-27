@@ -67,6 +67,9 @@ GtkWidget *aisleriot_board_new (ArStyle *style,
 
 void aisleriot_board_abort_move (AisleriotBoard * board);
 
+void aisleriot_board_set_selection_slot (AisleriotBoard *board, ArSlot *slot);
+ArSlot* aisleriot_board_get_selection_slot (AisleriotBoard *board);
+
 G_END_DECLS
 
 #endif /* !AISLERIOT_BOARD_H */

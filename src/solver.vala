@@ -1,19 +1,31 @@
 using Aisleriot;
 
 class Solver : Object {
-    public Game game {construct; get;}
+    public static bool find_win = false;
+    public static bool debug = false;
 
-    ulong window_state_signal;
+    public bool quit = false;
+
+    Game game = new Game.get_default();
+
+    Window window = (Window) ((Gtk.Application) Application.get_default())
+        .active_window;
 
     SList<unowned Slot>? foundation;
     SList<unowned Slot>? tableau;
+    unowned Slot? stock;
 
     Queue<int?> moves = new Queue<int?>();
 
-    bool backtrack() {
+    async bool backtrack() {
         while (true) {
-            message("backtrack");
             game.undo_move();
+            if (debug)
+                Timeout.add(1000, backtrack.callback);
+            else
+                Idle.add(backtrack.callback);
+            yield;
+
             var index = moves.pop_head();
 
             if (moves.is_empty())
@@ -22,12 +34,12 @@ class Solver : Object {
             if (index == null)
                 continue;
 
-            if (make_play(index + 1))
+            if (yield make_move(index + 1))
                 return true;
         }
     }
 
-    bool make_play(int index = 0) {
+    async bool make_move(int index = 0) {
         unowned SList<unowned Slot> in_play = tableau;
         unowned SList<unowned Slot> founder = foundation;
         if ((in_play == null || in_play.data == null)
@@ -37,7 +49,8 @@ class Solver : Object {
         (unowned Slot)[] available_choices = {};
 
         while (true) {
-            if (game.drop_valid(in_play.data, founder.data))
+            if (!(in_play.data in available_choices) &&
+                    game.drop_valid(in_play.data, founder.data))
                 available_choices += in_play.data;
             founder = founder.next;
             if (founder == null) {
@@ -48,39 +61,70 @@ class Solver : Object {
             }
         }
 
-        message("index: %d, avail: %d", index, available_choices.length);
+        if (debug) {
+            if (available_choices.length > 1)
+                foreach (var choice in available_choices) {
+                    window.board.selection_slot = choice;
+                    Timeout.add(500, make_move.callback);
+                    yield;
+                }
+
+            window.board.selection_slot = null;
+            Timeout.add(200, make_move.callback);
+            yield;
+        }
 
         if (available_choices.length > index) {
-            message("move");
+            if (debug) {
+                window.board.selection_slot = available_choices[index];
+                Timeout.add(2000, make_move.callback);
+                yield;
+            }
             game.activate(available_choices[index]);
             moves.push_head(index);
             return true;
         }
 
-        // are we missing solutions here?
-        if (game.can_deal && index == 0) {
-            message("deal");
+        if (game.can_deal) {
+            if (debug) {
+                window.board.selection_slot = stock;
+                Timeout.add(2000, make_move.callback);
+                yield;
+            }
             game.deal_cards();
             moves.push_head(null);
             return true;
         }
 
-        message("fail");
-
         return false;
     }
 
-    void populate_lists() {
-        foreach (unowned Slot slot in game.slots.data) {
-            if (slot.type == SlotType.FOUNDATION)
-                foundation.prepend(slot);
-            else if (slot.type == SlotType.TABLEAU)
-                tableau.prepend(slot);
-        }
+    public async void solver_loop() {
+        var cont = true;
+        while (cont && !quit) {
+            Idle.add(solver_loop.callback);
+            yield;
 
-        debug("Foundation slots found: %u", foundation.length());
-        debug("Tableau slots found: %u", tableau.length());
+            yield make_move();
+
+            if (game.state == GameState.WON)
+                return;
+
+            if (game.state == GameState.OVER)
+                if (!moves.is_empty())
+                    cont = yield backtrack();
+                else
+                    cont = false;
+
+            if (!cont && find_win) {
+                message("Game lost, starting anew");
+                cont = true;
+                game.new_game();
+            }
+        }
     }
+
+    ulong window_state_signal;
 
     ~Solver() {
         if (window_state_signal != 0)
@@ -89,8 +133,8 @@ class Solver : Object {
             game.notify_property("state");
     }
 
-    public Solver(bool find_win = false) {
-        Object(game: get_app_game());
+    public Solver() {
+        Object();
 
         window_state_signal = SignalHandler.find(game,
             SignalMatchType.ID|SignalMatchType.DETAIL,
@@ -99,28 +143,56 @@ class Solver : Object {
         if (window_state_signal != 0)
             SignalHandler.block(game, window_state_signal);
 
-        game.game_cleared.connect(() => {
+        window.destroy.connect(() => {quit = true;});
+
+        game.game_new.connect(() => {
             foundation = null;
             tableau = null;
+            stock = null;
+
+            foreach (unowned Slot slot in game.slots.data)
+                switch (slot.type) {
+                    case SlotType.FOUNDATION:
+                        foundation.prepend(slot);
+                        break;
+                    case SlotType.TABLEAU:
+                        tableau.prepend(slot);
+                        break;
+                    case SlotType.STOCK:
+                        // this will probably break for most games
+                        assert (stock == null);
+                        stock = slot;
+                        break;
+                }
+
+            GLib.debug("Foundation slots found: %u", foundation.length());
+            GLib.debug("Tableau slots found: %u", tableau.length());
         });
 
-        populate_lists();
-
-        Idle.add(() => {
-            make_play();
-            if (game.state == GameState.OVER)
-                if (!moves.is_empty())
-                    return backtrack();
-                else if (find_win) {
-                    game.new_game();
-                    populate_lists();
-                } else
-                    return false;
-            return true;
-        });
+        game.game_new();
     }
 }
 
-public void solve_cb() {
-    new Solver();
+Solver? instance = null;
+
+public void solve_cb(Gtk.ToggleAction action) {
+    if (action.active) {
+        assert (instance == null);
+        instance = new Solver();
+        instance.solver_loop.begin(() => {
+            action.active = false;
+        });
+    } else {
+        assert (instance != null);
+        ((!) instance).quit = true;
+        instance = null;
+    }
+}
+
+public void debug_solver_cb(Gtk.ToggleAction action) {
+    Solver.debug = action.active;
+}
+
+public void solve_until_win_cb(Gtk.ToggleAction action) {
+    Solver.find_win = action.active;
 }

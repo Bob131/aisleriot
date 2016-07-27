@@ -1,4 +1,3 @@
-[CCode (cheader_filename = "lib/ar-card.h")]
 namespace Aisleriot {
     [CCode (cname = "Card")]
     [SimpleType]
