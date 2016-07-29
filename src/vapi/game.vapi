@@ -50,13 +50,19 @@ namespace Aisleriot {
     public class Game : GLib.Object {
         public GLib.GenericArray<Slot> slots {get;}
         public string game_module {get;}
-        public string score {get;}
         public GameState state {get;}
         public bool can_deal {get {
             var ret = GLib.Value(typeof(bool));
             this.get_property("can-deal", ref ret);
             return (bool) ret;
         }}
+
+        unowned string get_score();
+        public int score {
+            [CCode (cname = "aisleriot_game_get_score_wrapper")]
+            get {
+                return int.parse(get_score());
+            }}
 
         public void deal_cards();
         public void new_game();

@@ -17,6 +17,8 @@
       <menu action="ThemeMenu">
         <placeholder name="ThemesPH"/>
       </menu>
+      <separator/>
+      <menuitem action="DebugSolver"/>
     </menu>
     <menu action="ControlMenu">
       <menuitem action="UndoMove"/>
@@ -27,7 +29,6 @@
       <menuitem action="ClickToMove"/>
       <menuitem action="Sound"/>
       <separator/>
-      <menuitem action="DebugSolver"/>
       <menuitem action="SolveUntilWin"/>
     </menu>
     <menu action="OptionsMenu"/>

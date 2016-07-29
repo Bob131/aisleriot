@@ -22,10 +22,8 @@ struct ArClockPrivate {
   time_t stop_time;
 };
 
-static void
-clock_paint (ArClock *clock_widget)
-{
-  char string[32];
+gchar *
+ar_clock_to_string (ArClock *clock_widget) {
   time_t seconds;
   int secs;
   int mins;
@@ -38,9 +36,13 @@ clock_paint (ArClock *clock_widget)
   secs = secs - mins * 60;
 
   /* FIXMEchpe: i18n! */
-  g_snprintf (string, sizeof (string), "%.2d:%.2d:%.2d", hours, mins, secs);
+  return g_strdup_printf ("%.2d:%.2d:%.2d", hours, mins, secs);
+}
 
-  gtk_label_set_text (GTK_LABEL (clock_widget), string);
+static void
+clock_paint (ArClock *clock_widget)
+{
+  gtk_label_set_text (GTK_LABEL (clock_widget), ar_clock_to_string (clock_widget));
 }
 
 static gboolean

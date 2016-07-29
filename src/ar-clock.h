@@ -46,6 +46,7 @@ void       ar_clock_add_seconds  (ArClock *clock_widget,
                                      time_t seconds);
 void       ar_clock_set_update   (ArClock *clock_widget,
                                      gboolean do_update);
+char      *ar_clock_to_string    (ArClock *clock_widget);
 
 G_END_DECLS
 

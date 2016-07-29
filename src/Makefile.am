@@ -38,6 +38,7 @@ sol_SOURCES = \
 	util.h		\
 	window.c	\
 	window.h	\
+	counter.vala	\
 	solver.vala	\
 	solver.h	\
 	$(NULL)
@@ -65,6 +66,7 @@ sol_LDADD = \
 
 sol_VALAFLAGS = \
 	-H solver.h	 \
+	--use-header	 \
 	--vapidir vapi	 \
 	--pkg aisleriot  \
 	--fatal-warnings \

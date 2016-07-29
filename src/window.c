@@ -99,6 +99,7 @@ struct _AisleriotWindowPrivate
   GtkWidget *score_box;
   GtkWidget *score_label;
   GtkWidget *clock;
+  GtkWidget *counter;
 
   GtkUIManager *ui_manager;
   GtkActionGroup *action_group;
@@ -2033,6 +2034,9 @@ aisleriot_window_init (AisleriotWindow *window)
   ar_atk_util_add_atk_relation (label, priv->clock, ATK_RELATION_LABEL_FOR);
   ar_atk_util_add_atk_relation (priv->clock, label, ATK_RELATION_LABELLED_BY);
 
+  priv->counter = GTK_WIDGET (aisleriot_counter_new ());
+  gtk_box_pack_end (GTK_BOX (statusbar_hbox), priv->counter, FALSE, FALSE, 0);
+
   /* Load the UI after we've connected the statusbar,
    * otherwise not all actions will have statusbar help.
    */
@@ -2415,7 +2419,19 @@ aisleriot_window_get_game_module (AisleriotWindow *window)
 AisleriotBoard *
 aisleriot_window_get_board (AisleriotWindow *window)
 {
-  AisleriotBoard* ret = window->priv->board;
+  AisleriotBoard* ret = AISLERIOT_BOARD (window->priv->board);
   g_assert (ret);
-  return g_object_ref(ret);
+  return g_object_ref (ret);
+}
+
+ArClock *
+aisleriot_window_get_clock (AisleriotWindow *window) {
+  ArClock* ret = AR_CLOCK (window->priv->clock);
+  g_assert (ret);
+  return g_object_ref (ret);
+}
+
+AisleriotCounter *
+aisleriot_window_get_counter (AisleriotWindow *window) {
+  return g_object_ref (AISLERIOT_COUNTER (window->priv->counter));
 }
